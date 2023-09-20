@@ -1,8 +1,7 @@
-# Copy this file to a repository and edit it as needed to apply the reusable workflow
+# Copy this file to a repository and edit it as needed to set up the reusable workflow
 name: "Build, Scan container image"
 
 on:
-  # Usual rules here
   push:
     branches:
       - 'main'
@@ -11,8 +10,15 @@ on:
   # group: ${{ github.ref }}-${{ github.workflow }}
   # cancel-in-progress: true
 
+permissions: read-all
+
 jobs:
   invoke-reusable-build:
+    strategy:
+      matrix:
+        docker-file:
+          - './service1/Dockerfile'
+          - './service2/Dockerfile'
     name: "Invoke reusable build workflow"
     uses: <your-org>/<your-repo>/.github/workflows/reusable-build-provider.yaml@<branch>
     # Invoking permissions must be equal to or greater than those for the reusable workflow provider
@@ -27,4 +33,5 @@ jobs:
       # pull-requests: write
     with:
       # Check '.on.workflow_call.inputs' of the workflow provider
+      docker-file: ${{ matrix.docker-file }}
       severity: "CRITICAL,HIGH"

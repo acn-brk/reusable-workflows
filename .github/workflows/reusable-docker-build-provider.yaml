@@ -3,6 +3,10 @@ name: "Reusable workflow to build with docker and scan with trivy"
 on:
   workflow_call:
     inputs:
+      docker-file:
+        required: false
+        type: string
+        default: "./Dockerfile"
       severity:
         required: false
         type: string
@@ -10,7 +14,7 @@ on:
       output:
         required: false
         type: string
-        default: 'trqivy-results-${{ github.repository }}.sarif'
+        default: 'trivy-results-${{ github.repository }}.sarif'
       hide-progress:
         required: false
         type: boolean
@@ -28,8 +32,6 @@ jobs:
   build-scan:
     name: "build, scan"
     runs-on: ubuntu-latest
-    # outputs:
-      # someVar: ${{ steps.someStep.outputs.someVar }}
     steps:
       - uses: actions/checkout@v4
       - name: Prepare image reference
@@ -37,7 +39,7 @@ jobs:
           echo "GH_REPOSITORY=$(echo ${{ github.repository }} | cut -d '/' -f2 )" >> $GITHUB_ENV
       - name: Build Image
         run: |
-          docker build -t $GH_REPOSITORY:${{ github.sha }} .
+          docker build -t $GH_REPOSITORY:${{ github.sha }} -f ${{ inputs.docker-file }}
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
