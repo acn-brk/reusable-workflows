@@ -1,0 +1,30 @@
+# Copy this file to a repository and edit it as needed to apply the reusable workflow
+name: "Build, Scan container image"
+
+on:
+  # Usual rules here
+  push:
+    branches:
+      - 'main'
+# Cancel any active runs of this workflow for the same branch
+# concurrency:
+  # group: ${{ github.ref }}-${{ github.workflow }}
+  # cancel-in-progress: true
+
+jobs:
+  invoke-reusable-build:
+    name: "Invoke reusable build workflow"
+    uses: <your-org>/<your-repo>/.github/workflows/reusable-build-provider.yaml@<branch>
+    # Invoking permissions must be equal to or greater than those for the reusable workflow provider
+    # Permisions set here for the GITHUB_TOKEN will be passed on to callee
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      # to push docker image to ghcr.io
+      # packages: write
+      # to create, update comments in PRs
+      # pull-requests: write
+    with:
+      # Check '.on.workflow_call.inputs' of the workflow provider
+      severity: "CRITICAL,HIGH"
