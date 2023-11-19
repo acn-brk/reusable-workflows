@@ -1,6 +1,7 @@
 name: "Reusable workflow to build with docker and scan with trivy"
 
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       docker-file:
